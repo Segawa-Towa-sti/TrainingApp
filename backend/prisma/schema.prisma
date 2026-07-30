@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  createdAt    DateTime       @default(now())
+  menuGroups   MenuGroup[]
+  sessions     WorkoutSession[]
+}
+
+model MenuGroup {
+  id                 Int                  @id @default(autoincrement())
+  userId             Int
+  name               String
+  deletedAt          DateTime?
+  user               User                 @relation(fields: [userId], references: [id])
+  menuGroupExercises MenuGroupExercise[]
+}
+
+model Exercise {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  menuGroupExercises MenuGroupExercise[]
+  workoutSets        WorkoutSet[]
+}
+
+model MenuGroupExercise {
+  id          Int       @id @default(autoincrement())
+  menuGroupId Int
+  exerciseId  Int
+  menuGroup   MenuGroup @relation(fields: [menuGroupId], references: [id])
+  exercise    Exercise  @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutSession {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  date        DateTime
+  user        User         @relation(fields: [userId], references: [id])
+  workoutSets WorkoutSet[]
+}
+
+model WorkoutSet {
+  id         Int            @id @default(autoincrement())
+  sessionId  Int
+  exerciseId Int
+  setNumber  Int
+  weight     Float
+  reps       Int
+  session    WorkoutSession @relation(fields: [sessionId], references: [id])
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+}
