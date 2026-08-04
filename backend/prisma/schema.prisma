@@ -32,6 +32,7 @@ model MenuGroup {
 model Exercise {
   id                 Int                  @id @default(autoincrement())
   name               String               @unique
+  deletedAt          DateTime?
   menuGroupExercises MenuGroupExercise[]
   workoutSets        WorkoutSet[]
 }
